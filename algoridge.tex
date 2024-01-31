@@ -1,0 +1,129 @@
+% !TeX spellcheck = en_US
+\documentclass{article}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{graphicx}
+\usepackage{hyperref}
+\usepackage{xstring}
+\usepackage{catchfile}
+
+% borrowed from https://tex.stackexchange.com/questions/455396/how-to-include-the-current-git-commit-id-and-branch-in-my-document#:~:text=the%20branch%20name%20can%20be%20extracted%20from%20.git/HEAD
+\CatchFileDef{\headfull}{.git/HEAD}{}
+\StrGobbleRight{\headfull}{1}[\head]
+\StrBehind[2]{\head}{/}[\branch]
+\IfFileExists{.git/refs/heads/\branch}{%
+    \CatchFileDef{\commit}{.git/refs/heads/\branch}{}}{%
+    \newcommand{\commit}{\dots~(in \emph{packed-refs})}}
+
+\sloppy
+
+\newcommand{\D}{\,\mathrm{d}}
+\newcommand{\pd}[2]{\ensuremath{\frac{\partial #1}{\partial #2}}}
+\newcommand{\pdl}[2]{\ensuremath{\partial #1 / \partial #2}}
+\newcommand{\cf}{\textit{cf.} }
+\newcommand{\eg}{\textit{e.g.}, }
+
+\newcommand{\rn}{\ensuremath{\rho^{(n)}}}
+\newcommand{\rs}{\ensuremath{\rho^{(s)}}}
+
+\newcommand{\vn}{\ensuremath{v_\text{n}}}
+\newcommand{\vnb}{\ensuremath{\mathbf{v}_\text{n}}}
+\newcommand{\vo}{\ensuremath{v_\text{1}}}
+\newcommand{\vob}{\ensuremath{\mathbf{v}_\text{1}}}
+\newcommand{\vt}{\ensuremath{v_\text{2}}}
+\newcommand{\vtb}{\ensuremath{\mathbf{v}_\text{2}}}
+
+\newcommand{\uo}{\ensuremath{u_\text{1}}}
+\newcommand{\uob}{\ensuremath{\mathbf{u}_\text{1}}}
+\newcommand{\ut}{\ensuremath{u_\text{2}}}
+\newcommand{\utb}{\ensuremath{\mathbf{u}_\text{2}}}
+
+\newcommand{\job}{\ensuremath{\mathbf{j}_\text{1}}}
+\newcommand{\jtb}{\ensuremath{\mathbf{j}_\text{2}}}
+
+\author{Lev Melnikovsky}
+%
+\title{On the Ridge Detection Algorithm}
+%\date{\texttt{\commit} on branch \texttt{\branch}}
+\begin{document}
+\maketitle
+%\begin{abstract}
+%\end{abstract}
+%\section{Introduction}
+
+Ridge detection algorithms are important in various applications~\cite{ridges94},\cite{ridges96}.
+
+Local \textit{height definition} of the ridge\footnote{Make adjustments for d-dimensional ridges...} for a smooth function $f(\mathbf{x})$, $\mathbf{x} \in \mathbb{R}^n$ is a set of points such that:
+\begin{enumerate}
+\item the gradient $\mathbf{v} = \nabla f$ is the eigenvector of the Hessian $\boldsymbol{H} = \partial^2 \! f/\partial x^i\, \partial x^j$, corresponding to the eigenvalue $\Lambda$;
+\item all other eigenvalues $\lambda_\alpha$ are 
+\begin{enumerate}
+\item smaller $\lambda_\alpha < \Lambda$,
+\item negative $\lambda_\alpha <0$.
+\end{enumerate} 
+\end{enumerate}
+
+Present note suggests an optimization of the straightforward approach to explicitly test the gradient against the diagonalized Hessian and its spectrum.
+
+Namely, it should be more efficient to test if the gradient $\mathbf{v}$ is indeed an eigenvector $\boldsymbol{H} \mathbf{v} = \Lambda\mathbf{v}$. The last equation is equivalent to:
+\begin{equation}
+e^{j k \dots}
+\frac{\partial^2 \! f}{\partial x^i\, \partial x^j}
+\pd{f}{x^i}\pd{f}{x^k}
+=0,
+\end{equation}
+where $e^{j k \dots}$ is the n-dimensional Levi-Civita symbol and the Einstein summation convention is adopted. This equation can be transformed as follows:
+\begin{equation}
+0=
+e^{j k \dots}
+\pd{v^i}{x^j} v^i v^k=
+\frac{e^{j k \dots}}{2}
+\pd{(v^i v^i)}{x^j}  v^k=
+\frac{e^{j k \dots}}{2}
+\pd{(\left|\mathbf{v}\right|^2 v^k)}{x^j},
+\end{equation}
+or
+\begin{equation}
+\label{curl}
+0=
+\mathrm{curl} \left(\left|\mathbf{v}\right|^2 \mathbf{v}\right),
+\end{equation}
+where $\mathrm{curl}$ is a scalar for 2-dimensional images and a vector for 3-dimensional fields. This ``sign-changing'' condition can be efficiently bi-sected.
+
+The eigenvalue analysis is only necessary where Eq.\eqref{curl} is satisfied. It can also be performed without explicit Hessian diagonalization. We begin with the eigenvalue $\Lambda$, corresponding to the eigenvector $\mathbf{v}$:
+\begin{equation}
+\Lambda = \frac{\mathbf{v}^T\boldsymbol{H} \mathbf{v}}{\left|\mathbf{v}\right|^2}.
+\end{equation}
+
+If $\Lambda$ turns out to be negative, then it remains to check whether the 
+\begin{equation}
+\label{he1}
+\boldsymbol{H} -\Lambda \boldsymbol{E} \preceq 0,
+\end{equation}
+(where $\boldsymbol{E}$ is the identity matrix) is negative semi-definite. 
+
+Otherwise, the same requirement is imposed on
+\begin{equation}
+\label{he2}
+\boldsymbol{H}\left(\boldsymbol{E} - \frac{\mathbf{v}\,\mathbf{v}^T}{\left|\mathbf{v}\right|^2}\right)=
+\boldsymbol{H} - \Lambda \frac{\mathbf{v}\,\mathbf{v}^T}{\left|\mathbf{v}\right|^2}
+\preceq 0,
+\end{equation}
+where the expression in parentheses is the projection to the subspace orthogonal to $\mathbf{v}$.
+
+Both inequalities \eqref{he1},\eqref{he2} are efficiently checked by Cholesky decomposition algorithm.
+
+\begin{thebibliography}{9}
+\bibitem{ridges94}
+D. Eberly, R. Gardner, B. Morse, S. Pizer, and C. Scharlach,
+\textit{Ridges for Image Analysis},
+\href{https://doi.org/10.1007/BF01262402}{J Math Imaging Vis \textbf{4}, 353 (1994)}.
+\bibitem{ridges96}
+D. Eberly,
+\textit{Ridges in Image and Data Analysis},
+Computational Imaging and Vision \textbf{7} (Springer Netherlands, 1996).
+\end{thebibliography}
+\end{document}
+
+
+
