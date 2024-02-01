@@ -17,29 +17,9 @@
 
 \sloppy
 
-\newcommand{\D}{\,\mathrm{d}}
 \newcommand{\pd}[2]{\ensuremath{\frac{\partial #1}{\partial #2}}}
-\newcommand{\pdl}[2]{\ensuremath{\partial #1 / \partial #2}}
 \newcommand{\cf}{\textit{cf.} }
 \newcommand{\eg}{\textit{e.g.}, }
-
-\newcommand{\rn}{\ensuremath{\rho^{(n)}}}
-\newcommand{\rs}{\ensuremath{\rho^{(s)}}}
-
-\newcommand{\vn}{\ensuremath{v_\text{n}}}
-\newcommand{\vnb}{\ensuremath{\mathbf{v}_\text{n}}}
-\newcommand{\vo}{\ensuremath{v_\text{1}}}
-\newcommand{\vob}{\ensuremath{\mathbf{v}_\text{1}}}
-\newcommand{\vt}{\ensuremath{v_\text{2}}}
-\newcommand{\vtb}{\ensuremath{\mathbf{v}_\text{2}}}
-
-\newcommand{\uo}{\ensuremath{u_\text{1}}}
-\newcommand{\uob}{\ensuremath{\mathbf{u}_\text{1}}}
-\newcommand{\ut}{\ensuremath{u_\text{2}}}
-\newcommand{\utb}{\ensuremath{\mathbf{u}_\text{2}}}
-
-\newcommand{\job}{\ensuremath{\mathbf{j}_\text{1}}}
-\newcommand{\jtb}{\ensuremath{\mathbf{j}_\text{2}}}
 
 \author{Lev Melnikovsky}
 %
@@ -65,7 +45,7 @@ Local \textit{height definition} of the ridge\footnote{Make adjustments for d-di
 
 Present note suggests an optimization of the straightforward approach to explicitly test the gradient against the diagonalized Hessian and its spectrum.
 
-Namely, it should be more efficient to test if the gradient $\mathbf{v}$ is indeed an eigenvector $\boldsymbol{H} \mathbf{v} = \Lambda\mathbf{v}$. The last equation is equivalent to:
+Namely, it should be more efficient to test if the gradient $\mathbf{v}$ is indeed an eigenvector $\boldsymbol{H} \mathbf{v} = \Lambda\mathbf{v}$. This statement is equivalent to:
 \begin{equation}
 e^{j k \dots}
 \frac{\partial^2 \! f}{\partial x^i\, \partial x^j}
@@ -90,7 +70,7 @@ or
 \end{equation}
 where $\mathrm{curl}$ is a scalar for 2-dimensional images and a vector for 3-dimensional fields. This ``sign-changing'' condition can be efficiently bi-sected.
 
-The eigenvalue analysis is only necessary where Eq.\eqref{curl} is satisfied. It can also be performed without explicit Hessian diagonalization. We begin with the eigenvalue $\Lambda$, corresponding to the eigenvector $\mathbf{v}$:
+The Hessian spectral analysis is only necessary where Eq.\eqref{curl} is satisfied. It can also be performed without computationally heavy explicit diagonalization. We begin with the eigenvalue $\Lambda$, corresponding to the eigenvector $\mathbf{v}$:
 \begin{equation}
 \Lambda = \frac{\mathbf{v}^T\boldsymbol{H} \mathbf{v}}{\left|\mathbf{v}\right|^2}.
 \end{equation}
