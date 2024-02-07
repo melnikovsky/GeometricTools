@@ -20,6 +20,7 @@
 \newcommand{\pd}[2]{\ensuremath{\frac{\partial #1}{\partial #2}}}
 \newcommand{\cf}{\textit{cf.} }
 \newcommand{\eg}{\textit{e.g.}, }
+\DeclareMathOperator{\Tr}{Tr}
 
 \author{Lev Melnikovsky}
 %
@@ -33,7 +34,7 @@
 
 Ridge detection algorithms are important in various applications~\cite{ridges94},\cite{ridges96}.
 
-Local \textit{height definition} of the ridge\footnote{Make adjustments for d-dimensional ridges...} for a smooth function $f(\mathbf{x})$, $\mathbf{x} \in \mathbb{R}^n$ is a set of points such that:
+Local \textit{height definition} of the ridge for a smooth function $f(\mathbf{x})$, $\mathbf{x} \in \mathbb{R}^n$ is a set of points such that:
 \begin{enumerate}
 \item the gradient $\mathbf{v} = \nabla f$ is the eigenvector of the Hessian $\boldsymbol{H} = \partial^2 \! f/\partial x^i\, \partial x^j$, corresponding to the eigenvalue $\Lambda$;
 \item all other eigenvalues $\lambda_\alpha$ are 
@@ -75,23 +76,40 @@ The Hessian spectral analysis is only necessary where Eq.\eqref{curl} is satisfi
 \Lambda = \frac{\mathbf{v}^T\boldsymbol{H} \mathbf{v}}{\left|\mathbf{v}\right|^2}.
 \end{equation}
 
-If $\Lambda$ turns out to be negative, then it remains to check whether the 
+If $\Lambda$ turns out to be negative, then it remains to check whether the matrix 
 \begin{equation}
 \label{he1}
-\boldsymbol{H} -\Lambda \boldsymbol{E} \preceq 0,
+\boldsymbol{H}' = \boldsymbol{H} -\Lambda \boldsymbol{E} \preceq 0,
 \end{equation}
-(where $\boldsymbol{E}$ is the identity matrix) is negative semi-definite. 
+is negative semi-definite. Here $\boldsymbol{E}$ is the identity matrix. 
 
-Otherwise, the same requirement is imposed on
+Otherwise, the same requirement is imposed on the matrix
 \begin{equation}
 \label{he2}
+\boldsymbol{H}''=
 \boldsymbol{H}\left(\boldsymbol{E} - \frac{\mathbf{v}\,\mathbf{v}^T}{\left|\mathbf{v}\right|^2}\right)=
 \boldsymbol{H} - \Lambda \frac{\mathbf{v}\,\mathbf{v}^T}{\left|\mathbf{v}\right|^2}
 \preceq 0,
 \end{equation}
 where the expression in parentheses is the projection to the subspace orthogonal to $\mathbf{v}$.
 
-Both inequalities \eqref{he1},\eqref{he2} are efficiently checked by Cholesky decomposition algorithm.
+Both inequalities \eqref{he1},\eqref{he2} are efficiently checked by Cholesky decomposition algorithm for arbitrary dimensionality.
+
+In the practically important 2-dimensional case analysis is particularly simple. Note, that zero is an eigenvalue of both $\boldsymbol{H}'$ and $\boldsymbol{H}''$ matrices. The second eigenvalue is equal to the trace of these matrices. It is obvious that
+\begin{equation*}
+\Tr E = 2, \qquad \Tr \frac{\mathbf{v}\,\mathbf{v}^T}{\left|\mathbf{v}\right|^2} = 1.
+\end{equation*}
+Inequalities \eqref{he1},\eqref{he2} can therefore be simplified to:
+\begin{equation*}
+\tag{$5^*$}
+\Tr\boldsymbol{H} - 2\Lambda \leq 0,
+\end{equation*}
+\begin{equation*}
+\tag{$6^*$}
+\Tr \boldsymbol{H} - \Lambda \leq 0.
+\end{equation*}
+
+
 
 \begin{thebibliography}{9}
 \bibitem{ridges94}
